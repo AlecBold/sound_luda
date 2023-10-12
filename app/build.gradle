@@ -1,0 +1,98 @@
+plugins {
+  id 'com.android.application'
+  id 'org.jetbrains.kotlin.android'
+  id 'kotlin-kapt'
+//  id 'dagger.hilt.android.plugin'
+}
+
+android {
+  compileSdk SDK.compileSDK
+
+  namespace "com.example.soundluda"
+
+  defaultConfig {
+    applicationId "com.example.soundluda"
+    minSdk SDK.minSDK
+    targetSdk SDK.targetSDK
+    versionCode 1
+    versionName "1.0"
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    vectorDrawables {
+      useSupportLibrary true
+    }
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    }
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_18
+    targetCompatibility JavaVersion.VERSION_18
+  }
+  kotlinOptions {
+    jvmTarget = '18'
+  }
+  buildFeatures {
+    compose true
+  }
+  composeOptions {
+    kotlinCompilerExtensionVersion Version.composeOptionVersion
+  }
+  packagingOptions {
+    resources {
+      excludes += '/META-INF/{AL2.0,LGPL2.1}'
+    }
+  }
+}
+
+dependencies {
+  implementation project(":core")
+  implementation project(":domain")
+  implementation project(":data")
+
+  implementation Deps.core
+
+  implementation Lifecycle.lifecycleRuntime
+
+  implementation Coroutines.kotlinxCoroutinesAndroid
+
+  implementation OkHttp.okhttp
+  implementation Retrofit.retrofit
+
+  implementation NavigationComponent.navFragmentKtx
+  implementation NavigationComponent.navUiKtx
+  implementation NavigationComponent.navCompose
+
+  implementation JetpackCompose.composeLifecycleViewModel
+  implementation JetpackCompose.composeUi
+  implementation JetpackCompose.composeMaterial
+  implementation JetpackCompose.composeUiToolingPreview
+  implementation JetpackCompose.composeActivity
+
+  implementation Dagger.daggerAndroid
+  implementation Dagger.daggerAndroidSupport
+  kapt Dagger.daggerAndroidProcessor
+  implementation Dagger.dagger
+  kapt Dagger.daggerCompiler
+
+//  implementation Hilt.hiltAndroid
+//  implementation Hilt.hiltLifecycleViewModel
+//  implementation Hilt.hiltNavigationCompose
+//  kapt Hilt.hiltCompiler
+//  kapt Hilt.hiltAndroidCompiler
+
+
+  testImplementation TestImplementation.jUnit
+
+  androidTestImplementation AndroidTestImplementation.testExtJunit
+  androidTestImplementation AndroidTestImplementation.testEspressoCore
+  androidTestImplementation AndroidTestImplementation.composeUiTestJunit
+  androidTestImplementation AndroidTestImplementation.navComponentTesting
+
+  debugImplementation DebugImplementation.uiTooling
+  debugImplementation DebugImplementation.uiTestManifest
+}
