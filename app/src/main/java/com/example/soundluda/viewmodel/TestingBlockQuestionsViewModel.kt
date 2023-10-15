@@ -1,5 +1,6 @@
 package com.example.soundluda.viewmodel
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.example.domain.model.VariantAnswer
 import com.example.domain.usecase.TopicQuestionsUseCase
 import com.example.soundluda.util.Toast
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +28,9 @@ data class TestingBlockQuestionsUiState(
   val error: Throwable? =  null,
 )
 
-sealed class UserAction {
+sealed class Action {
+  object ShowResult: Action()
+  object Noop: Action()
 }
 
 class TestingBlockQuestionsViewModel(
@@ -41,6 +45,10 @@ class TestingBlockQuestionsViewModel(
   )
   val uiState: StateFlow<TestingBlockQuestionsUiState>
     get() = _uiState.asStateFlow()
+
+  private val _action: MutableStateFlow<Action> = MutableStateFlow(Action.Noop)
+  val action: StateFlow<Action>
+    get() = _action.asStateFlow()
 
   private val _userAnswers = mutableStateListOf<UserAnswer>()
   val userAnswers: List<UserAnswer> = _userAnswers
@@ -77,7 +85,7 @@ class TestingBlockQuestionsViewModel(
         _userAnswers.add(UserAnswer(questions[index + 1]))
       }
     } else {
-      //todo: after finish
+      _action.value = Action.ShowResult
     }
   }
 }

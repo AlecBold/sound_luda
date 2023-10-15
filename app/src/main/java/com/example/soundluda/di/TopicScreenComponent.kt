@@ -5,6 +5,7 @@ import com.example.domain.usecase.TopicDataInteractor
 import com.example.domain.usecase.TopicDataUseCase
 import com.example.domain.usecase.TopicQuestionsInteractor
 import com.example.domain.usecase.TopicQuestionsUseCase
+import com.example.soundluda.ui.RouteNavigator
 import com.example.soundluda.viewmodel.TopicViewModel
 import dagger.BindsInstance
 import dagger.Component
@@ -57,8 +58,9 @@ class TopicScreenModule() {
   @Provides
   fun provideTopicViewModel(
     topicDataUseCase: TopicDataUseCase,
-    @TopicId idTopic: String
+    @TopicId idTopic: String,
+    routeNavigator: RouteNavigator
   ): TopicViewModel {
-    return TopicViewModel(topicDataUseCase, idTopic)
+    return TopicViewModel(topicDataUseCase, idTopic, routeNavigator)
   }
 }

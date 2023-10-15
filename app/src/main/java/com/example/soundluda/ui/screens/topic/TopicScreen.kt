@@ -28,7 +28,6 @@ import com.example.soundluda.viewmodel.TopicViewModel
 
 @Composable
 fun TopicScreen(
-  onClickGroupQuestions: (Int, Int) -> Unit,
   topicViewModel: TopicViewModel = viewModel()
 ) {
   val topicUiState by topicViewModel.uiState.collectAsState()
@@ -63,7 +62,7 @@ fun TopicScreen(
     ) {
       items(topicUiState.questionsGroups.group) { groupQuestions ->
         QuestionsPartCard(
-          onClick = { onClickGroupQuestions(it.from, it.to) },
+          onClick = { topicViewModel.onClickGroupQuestions(it) },
           groupQuestions = groupQuestions
         )
       }

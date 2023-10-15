@@ -6,6 +6,8 @@ import com.example.core.AndroidLoggable
 import com.example.core.Loggable
 import com.example.domain.model.QuestionData
 import com.example.domain.usecase.TopicQuestionsUseCase
+import com.example.soundluda.ui.RouteNavigator
+import com.example.soundluda.ui.Screen
 import com.example.soundluda.util.Toast
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -25,8 +27,10 @@ data class QuestionsBlockGroupState(
 class QuestionsBlockGroupViewModel(
   val topicId: String,
   val rangeQuestionsGroup: Pair<Int, Int>,
-  val topicQuestionsUseCase: TopicQuestionsUseCase
-) : ViewModel(), Loggable by AndroidLoggable("QuestionBlockGroupVM") {
+  val topicQuestionsUseCase: TopicQuestionsUseCase,
+  private val routeNavigator: RouteNavigator
+) : ViewModel(), RouteNavigator by routeNavigator,
+  Loggable by AndroidLoggable("QuestionBlockGroupVM") {
 
   private val _uiState: MutableStateFlow<QuestionsBlockGroupState> =
     MutableStateFlow(QuestionsBlockGroupState())
@@ -47,6 +51,16 @@ class QuestionsBlockGroupViewModel(
 
   init {
     getQuestions()
+  }
+
+  fun onClickStartTesting() {
+    navigateToRoute(
+      Screen.TestingBlock.buildRoute(
+        idTopic = topicId,
+        from = rangeQuestionsGroup.first,
+        to = rangeQuestionsGroup.second
+      )
+    )
   }
 
   override fun onCleared() {

@@ -36,8 +36,7 @@ import com.example.soundluda.viewmodel.QuestionsBlockGroupViewModel
 
 @Composable
 fun QuestionsBlockGroupScreen(
-  questionsBlockGroupViewModel: QuestionsBlockGroupViewModel = viewModel(),
-  onClickStartTesting: () -> Unit
+  questionsBlockGroupViewModel: QuestionsBlockGroupViewModel = viewModel()
 ) {
   val uiState by questionsBlockGroupViewModel.uiState.collectAsState()
   Box {
@@ -62,7 +61,7 @@ fun QuestionsBlockGroupScreen(
         Icon(Icons.Filled.PlayArrow, "Start testing button.")
       },
       onClick = {
-        onClickStartTesting()
+        questionsBlockGroupViewModel.onClickStartTesting()
       }
     )
   }

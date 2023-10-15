@@ -1,9 +1,9 @@
 package com.example.soundluda.di
 
-import androidx.navigation.Navigator
 import com.example.domain.repository.TopicsRepository
 import com.example.domain.usecase.TopicQuestionsInteractor
 import com.example.domain.usecase.TopicQuestionsUseCase
+import com.example.soundluda.ui.RouteNavigator
 import com.example.soundluda.viewmodel.QuestionsBlockGroupViewModel
 import dagger.BindsInstance
 import dagger.Component
@@ -55,12 +55,14 @@ class QuestionsBlockGroupModule() {
   fun provideQuestionsBlockGroupViewModel(
     @TopicId topicId: String,
     @Named(RANGE_QUESTIONS_GROUP) rangeQuestionsGroup: Pair<Int, Int>,
-    topicQuestionsUseCase: TopicQuestionsUseCase
+    topicQuestionsUseCase: TopicQuestionsUseCase,
+    routeNavigator: RouteNavigator
   ): QuestionsBlockGroupViewModel {
     return QuestionsBlockGroupViewModel(
       topicId,
       rangeQuestionsGroup,
-      topicQuestionsUseCase
+      topicQuestionsUseCase,
+      routeNavigator
     )
   }
 }

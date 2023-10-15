@@ -7,6 +7,9 @@ import com.example.data.network.TopicsNetworkRepository
 import com.example.data.repo_impl.TopicsRepositoryImpl
 import com.example.domain.repository.TopicsRepository
 import com.example.soundluda.App
+import com.example.soundluda.ui.MainRouteNavigator
+import com.example.soundluda.ui.NavRoute
+import com.example.soundluda.ui.RouteNavigator
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -31,6 +34,10 @@ interface AppComponent {
   }
 
   fun getTopicsRepository(): TopicsRepository
+
+  fun getRouteNavigator(): RouteNavigator
+
+  fun getNavRoute(): NavRoute
 }
 
 @Module(includes = [AppDbModule::class, AppNetworkModule::class, RepositoryModule::class])
@@ -41,6 +48,16 @@ class AppModule {
   fun provideAssetManager(context: Context): AssetManager {
     return context.assets
   }
+
+  @Singleton
+  @Provides
+  fun provideRouteNavigator(): RouteNavigator {
+    return MainRouteNavigator()
+  }
+
+  @Singleton
+  @Provides
+  fun provideNavRoute(routeNavigator: RouteNavigator): NavRoute = NavRoute(routeNavigator)
 
 }
 

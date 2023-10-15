@@ -9,6 +9,8 @@ import com.example.domain.model.TopicMetaData
 import com.example.domain.usecase.AvailableTopicsUseCase
 import com.example.core.GlobalLog
 import com.example.core.Loggable
+import com.example.soundluda.ui.RouteNavigator
+import com.example.soundluda.ui.Screen
 import com.example.soundluda.util.Toast
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -27,8 +29,9 @@ data class ListTopicsUiState(
 
 
 class ListTopicsViewModel(
-  private val availableTopics: AvailableTopicsUseCase
-): ViewModel(), Loggable by AndroidLoggable("ListTopicsViewModel") {
+  private val availableTopics: AvailableTopicsUseCase,
+  private val routeNavigator: RouteNavigator
+): ViewModel(), RouteNavigator by routeNavigator, Loggable by AndroidLoggable("ListTopicsViewModel") {
 
   init {
     log("Created")
@@ -61,6 +64,10 @@ class ListTopicsViewModel(
         }
       }
     }
+  }
+
+  fun onClickTopic(topicId: String) {
+    navigateToRoute(Screen.Topic.buildRoute(topicId))
   }
 
   private suspend fun handleException(action: suspend () -> Unit) {

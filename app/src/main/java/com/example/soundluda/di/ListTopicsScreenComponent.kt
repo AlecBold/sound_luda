@@ -3,6 +3,7 @@ package com.example.soundluda.di
 import com.example.domain.repository.TopicsRepository
 import com.example.domain.usecase.AvailableTopicsInteractor
 import com.example.domain.usecase.AvailableTopicsUseCase
+import com.example.soundluda.ui.RouteNavigator
 import com.example.soundluda.viewmodel.ListTopicsViewModel
 import dagger.BindsInstance
 import dagger.Component
@@ -39,7 +40,8 @@ class ListTopicsScreenModule {
   @Provides
   @PerScreen
   fun provideViewModel(
-    availableTopicsUseCase: AvailableTopicsUseCase
-  ): ListTopicsViewModel = ListTopicsViewModel(availableTopicsUseCase)
+    availableTopicsUseCase: AvailableTopicsUseCase,
+    routeNavigator: RouteNavigator
+  ): ListTopicsViewModel = ListTopicsViewModel(availableTopicsUseCase, routeNavigator)
 
 }

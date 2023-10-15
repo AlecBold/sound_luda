@@ -44,7 +44,6 @@ import com.example.soundluda.viewmodel.ListTopicsViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ListTopicsScreen(
-  onItemClick: (String) -> Unit,
   topicsViewModel: ListTopicsViewModel = viewModel()
 ) {
   val topicsUiState by topicsViewModel.uiState.collectAsState()
@@ -60,7 +59,7 @@ fun ListTopicsScreen(
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .height(IntrinsicSize.Min),
           onClick = {
-            onItemClick(topic.id)
+            topicsViewModel.onClickTopic(topic.id)
           },
         ) {
           Column(modifier = Modifier
@@ -116,6 +115,6 @@ fun ListTopicsScreen(
 @Composable
 fun ListTopicsScreenPreview() {
   SoundLudaTheme {
-    ListTopicsScreen(onItemClick = {})
+    ListTopicsScreen()
   }
 }

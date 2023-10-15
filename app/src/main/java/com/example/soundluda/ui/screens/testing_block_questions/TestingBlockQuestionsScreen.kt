@@ -23,6 +23,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -35,7 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.domain.model.QuestionData
 import com.example.domain.model.VariantAnswer
@@ -229,17 +233,23 @@ fun AnswerCard(
   }
 }
 
-
 @Composable
-fun QuestionBlock(
-  userAnswer: UserAnswer,
-  modifier: Modifier = Modifier
+fun ResultTestingDialog(
+  onDismiss: () -> Unit,
 ) {
-  Column(
-    modifier = modifier
+  Dialog(
+    onDismissRequest = onDismiss,
+    properties = DialogProperties(
+      dismissOnBackPress = true,
+      dismissOnClickOutside = false,
+      usePlatformDefaultWidth = false
+    )
   ) {
-    Text(text = userAnswer.questionData.question)
+    Box {
+      CircularProgressIndicator(
+        strokeCap = StrokeCap.Round
+      )
+    }
   }
 }
-
 

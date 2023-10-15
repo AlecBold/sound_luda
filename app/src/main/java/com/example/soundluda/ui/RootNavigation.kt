@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -47,11 +46,14 @@ sealed class Screen(val route: String) {
   object Topic : Screen("topic/{id}") {
     fun buildRoute(id: String) = "topic/$id"
   }
+
   object QuestionsBlock : Screen("topic/{id}/question_block/{from}-{to}") {
     fun buildRoute(idTopic: String, from: Int, to: Int) = "topic/$idTopic/question_block/$from-$to"
   }
+
   object TestingBlock : Screen("topic/{id}/question_block/{from}-{to}/testing") {
-    fun buildRoute(idTopic: String, from: Int, to: Int) = "topic/$idTopic/question_block/$from-$to/testing"
+    fun buildRoute(idTopic: String, from: Int, to: Int) =
+      "topic/$idTopic/question_block/$from-$to/testing"
   }
 }
 
@@ -60,15 +62,19 @@ fun RootScreen() {
   val navController = rememberNavController()
 
   var currentScreen: Screen by remember { mutableStateOf(Screen.ListTopics) }
+
+  App.appComponent.getNavRoute().SetupNavigation(navController)
   LaunchedEffect(navController) {
     navController.currentBackStackEntryFlow.collect {
-      when(it.destination.route) {
+      when (it.destination.route) {
         Screen.ListTopics.route -> {
           currentScreen = Screen.ListTopics
         }
+
         Screen.Topic.route -> {
           currentScreen = Screen.Topic
         }
+
         else -> {
 
         }
@@ -80,17 +86,21 @@ fun RootScreen() {
     topBar = {
       TopAppBar(
         title = {
-          Text(text = when(currentScreen) {
-            is Screen.ListTopics -> {
-              "ListTopics"
+          Text(
+            text = when (currentScreen) {
+              is Screen.ListTopics -> {
+                "ListTopics"
+              }
+
+              is Screen.Topic -> {
+                "Topic"
+              }
+
+              else -> {
+                ""
+              }
             }
-            is Screen.Topic -> {
-              "Topic"
-            }
-            else -> {
-              ""
-            }
-          })
+          )
         },
         navigationIcon = {
           IconButton(onClick = { navController.navigateUp() }) {
@@ -126,10 +136,10 @@ fun Navigation(navController: NavHostController, modifier: Modifier = Modifier) 
     startDestination = Screen.ListTopics.route,
     modifier = modifier
   ) {
-    addListTopics(navController)
-    addTopicGraph(navController)
-    addQuestionsBlockGraph(navController)
-    addTestingBlockQuestions(navController)
+    addListTopics()
+    addTopicGraph()
+    addQuestionsBlockGraph()
+    addTestingBlockQuestions()
   }
 }
 
@@ -137,7 +147,7 @@ val NavGraphBuilder.TAG
   get() = "RootNavigation"
 
 
-private fun NavGraphBuilder.addListTopics(navController: NavController) {
+private fun NavGraphBuilder.addListTopics() {
   composable(Screen.ListTopics.route) {
     val listTopicsViewModel = daggerViewModel {
       GlobalLog.log(TAG, "Create viewmodel ListTopics")
@@ -149,32 +159,17 @@ private fun NavGraphBuilder.addListTopics(navController: NavController) {
     }
     GlobalLog.log(TAG, "Navigated to ListTopicsScreen")
     ListTopicsScreen(
-      onItemClick = { id ->
-        navController.navigate(Screen.Topic.buildRoute(id))
-      },
       topicsViewModel = listTopicsViewModel
     )
   }
 }
 
-private fun NavGraphBuilder.addTopicGraph(navController: NavController) {
+private fun NavGraphBuilder.addTopicGraph() {
   composable(Screen.Topic.route) { navBackStackEntry ->
     navBackStackEntry.maxLifecycle
     val idTopic = navBackStackEntry.arguments?.getString("id")
     checkNotNull(idTopic) {
       "Cant open without idTopic"
-    }
-    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
-
-    DisposableEffect(lifecycleOwner.value) {
-      val observer = LifecycleEventObserver { owner, event ->
-        GlobalLog.log(TAG, "onEvent -> ${event} :: Topic")
-      }
-      lifecycleOwner.value.lifecycle.addObserver(observer)
-      onDispose {
-        GlobalLog.log(TAG, "onDispose :: Topic")
-        lifecycleOwner.value.lifecycle.removeObserver(observer)
-      }
     }
     val topicViewModel = daggerViewModel {
       GlobalLog.log(TAG, "Create viewmodel TopicScreen")
@@ -187,15 +182,12 @@ private fun NavGraphBuilder.addTopicGraph(navController: NavController) {
     }
     GlobalLog.log(TAG, "Navigate to Topic")
     TopicScreen(
-      onClickGroupQuestions = { from, to ->
-        navController.navigate(Screen.QuestionsBlock.buildRoute(idTopic, from, to))
-      },
       topicViewModel = topicViewModel
     )
   }
 }
 
-private fun NavGraphBuilder.addQuestionsBlockGraph(navController: NavController) {
+private fun NavGraphBuilder.addQuestionsBlockGraph() {
   composable(Screen.QuestionsBlock.route) { navBackStackEntry ->
     val idTopic = navBackStackEntry.arguments?.getString("id")
     val from = navBackStackEntry.arguments?.getString("from")
@@ -204,20 +196,6 @@ private fun NavGraphBuilder.addQuestionsBlockGraph(navController: NavController)
     checkNotNull(from) { "Can't open without arg from " }
     checkNotNull(to) { "Can't open without arg to " }
     GlobalLog.log(TAG, "Navigated to QuestionsBlockGroupScreen")
-
-    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
-
-    DisposableEffect(lifecycleOwner.value) {
-      val observer = LifecycleEventObserver { owner, event ->
-        GlobalLog.log(TAG, "onEvent -> ${event} :: QuestionBlock")
-      }
-      lifecycleOwner.value.lifecycle.addObserver(observer)
-      onDispose {
-        GlobalLog.log(TAG, "onDispose :: QuestionsBlock")
-        lifecycleOwner.value.lifecycle.removeObserver(observer)
-      }
-    }
-
     val questionsBlockViewModel = daggerViewModel {
       val component = DaggerQuestionsBlockGroupComponent
         .builder()
@@ -228,15 +206,12 @@ private fun NavGraphBuilder.addQuestionsBlockGraph(navController: NavController)
       component.getQuestionsBlockGroupViewMode()
     }
     QuestionsBlockGroupScreen(
-      questionsBlockGroupViewModel = questionsBlockViewModel,
-      onClickStartTesting = {
-        navController.navigate(Screen.TestingBlock.buildRoute(idTopic = idTopic, from = from.toInt(), to = to.toInt()))
-      }
+      questionsBlockGroupViewModel = questionsBlockViewModel
     )
   }
 }
 
-private fun NavGraphBuilder.addTestingBlockQuestions(navController: NavController) {
+private fun NavGraphBuilder.addTestingBlockQuestions() {
   composable(Screen.TestingBlock.route) { navBackStackEntry ->
     val idTopic = navBackStackEntry.arguments?.getString("id")
     val from = navBackStackEntry.arguments?.getString("from")

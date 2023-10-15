@@ -9,6 +9,8 @@ import com.example.domain.model.QuestionData
 import com.example.domain.model.TopicQuestionsData
 import com.example.domain.usecase.TopicDataUseCase
 import com.example.domain.usecase.TopicQuestionsUseCase
+import com.example.soundluda.ui.RouteNavigator
+import com.example.soundluda.ui.Screen
 import com.example.soundluda.util.Toast
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -41,8 +43,9 @@ const val BY_N_QUESTIONS_GROUP = 100
 
 class TopicViewModel(
   private val topicDataUseCase: TopicDataUseCase,
-  private val idTopic: String
-) : ViewModel(), Loggable by AndroidLoggable("TopicViewModel") {
+  private val idTopic: String,
+  private val routeNavigator: RouteNavigator
+) : ViewModel(), RouteNavigator by routeNavigator, Loggable by AndroidLoggable("TopicViewModel") {
 
   init {
     log("Created")
@@ -77,6 +80,10 @@ class TopicViewModel(
         )
       }
     }
+  }
+
+  fun onClickGroupQuestions(groupQuestions: GroupQuestions) {
+    navigateToRoute(Screen.QuestionsBlock.buildRoute(idTopic, groupQuestions.from, groupQuestions.to))
   }
 
   private fun groupQuestions(questions: List<QuestionData>): GroupedQuestionsModel {
